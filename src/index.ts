@@ -11,5 +11,7 @@
 console.log("Sadaiv Reputation Engine: Server Start!")
 
 import engine from './engine'
+import { initFirebase } from './helper/firebase'
 
+initFirebase()
 engine.start()

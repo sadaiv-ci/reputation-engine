@@ -17,3 +17,46 @@
 
 */
 
+import { Octokit } from "octokit";
+import { NoOfReposAndYearsOfExperience, OwnerDetails } from "./graphql/queries";
+import { NoOfReposAndYearsOfExperienceResponseType, OwnerDetailsType } from "./graphql/types";
+import { Source } from "../types";
+import { computeReposAndExp } from "./compute";
+
+// Extract details for computation from different APIs.
+export const extract = async (oct: Octokit): Promise<Source> => {
+
+  const ownerId = await extractOwnerDetails(oct)
+
+  // Use promise to do all the query & send data to compute.
+  const promises = [extractReposAndExp(oct, ownerId)]
+
+  const response = await Promise.all(promises)
+
+  const data: Source = { reputation: 0, credentials: [] }
+
+  response.forEach((r) => {
+    data.reputation += r.reputation
+    data.credentials = [...data.credentials, ...r.credentials]
+  })
+
+  return data;
+}
+
+const extractReposAndExp = async (oct: Octokit, ownerId: string): Promise<Source> => {
+  const query = NoOfReposAndYearsOfExperience;
+  const response = await oct.graphql<NoOfReposAndYearsOfExperienceResponseType>({ query, ownerId })
+
+  // Compute reputation score & Collect credentials from source.
+
+  const data = await computeReposAndExp(response)
+
+  return data
+}
+
+const extractOwnerDetails = async (oct: Octokit) => {
+  const query = OwnerDetails;
+  const response = await oct.graphql<OwnerDetailsType>(query)
+
+  return response.viewer.owner.nodes[0].owner.id
+}

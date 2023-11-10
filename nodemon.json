@@ -6,6 +6,5 @@
 		"restart": "kill-port 4000",
 		"crash": "kill-port 4000"
 	 },
-	"delay": "1500",
   "exec": "npx ts-node ./src/index.ts"
 }
