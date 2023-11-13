@@ -14,6 +14,39 @@ export const OwnerDetails = `
   }
 `
 
+export const LanguagesExperience = `
+  languagesPrivateRepos: repositories(privacy: PRIVATE, isFork: false, orderBy: {field: PUSHED_AT, direction: DESC},first: 100) {
+    totalCount
+    nodes {
+      name
+      primaryLanguage {
+        name
+      }
+      languages (first: 100) {
+        totalCount
+        nodes {
+          name
+        }
+      }
+    }
+  }
+  languagesPublicRepos: repositories(privacy: PUBLIC, isFork: false, orderBy: {field: PUSHED_AT, direction: DESC},first: 100) {
+    totalCount
+    nodes {
+      name
+      primaryLanguage {
+        name
+      }
+      languages (first: 100) {
+        totalCount
+        nodes {
+          name
+        }
+      }
+    }
+  }
+`
+
 // Query required to calculate score for: Number of Repos & Calculate Years of Experience.
 export const NoOfReposAndYearsOfExperience = `
   query ($ownerId: ID!) {
@@ -26,16 +59,17 @@ export const NoOfReposAndYearsOfExperience = `
           }
         }
       }
+      ${LanguagesExperience}
       publicFork: repositories(privacy: PUBLIC, isFork: true) {
         totalCount
       }
       privateFork: repositories(privacy: PRIVATE, isFork: true) {
         totalCount
       }
-      publicRepos: repositories(privacy: PUBLIC) {
+      publicRepos: repositories(privacy: PUBLIC, isFork: false) {
         totalCount
       }
-      privateRepos: repositories(privacy: PRIVATE) {
+      privateRepos: repositories(privacy: PRIVATE, isFork: false) {
         totalCount
       }
       forkRepoWithCommit: repositories(first: 100, isFork: true, privacy: PUBLIC) {

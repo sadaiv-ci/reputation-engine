@@ -1,6 +1,17 @@
 import { convertToReputationFloat, getYearDifference } from "../helper/maths";
-import { REPUTATION_DECIMAL_POINTS, Source } from "../types";
-import { NoOfReposAndYearsOfExperienceResponseType } from "./graphql/types";
+import { Credential, REPUTATION_DECIMAL_POINTS, Source } from "../types";
+import { Language, NoOfReposAndYearsOfExperienceResponseType } from "./graphql/types";
+
+import languages from './languages.json'
+interface LanguageData {
+  importance: number;
+  difficulty: number;
+}
+
+interface Languages {
+  [key: string]: LanguageData;
+}
+
 
 export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResponseType): Promise<Source> => {
   // Calculating Reputation.
@@ -13,7 +24,7 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
 
     const ownRepos = (data.viewer.publicRepos.totalCount)
 
-    const response = convertToReputationFloat((ownRepos + validForks * Math.min((validForks), 0.5))  / publicRepos)
+    const response = convertToReputationFloat((ownRepos + validForks * Math.min((validForks), 0.5)) / publicRepos)
 
     return {
       reputation: response,
@@ -50,7 +61,84 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
   }
 
 
-  const listOfMethods = [noOfReposScore(), yearsOfExperience()]
+
+  const computePortfolioScore = (): Source => {
+
+    let langsToRepoMap: Map<string, number> = new Map()
+
+    const totalRepos = data.viewer.languagesPublicRepos.totalCount + data.viewer.languagesPrivateRepos.totalCount
+
+    // console.log(data.viewer.languagesPublicRepos.nodes)
+    // Compute Languages Score & Credentials list.
+    data.viewer.languagesPublicRepos.nodes.forEach((e: Language) => {
+      if (e.primaryLanguage != null) {
+        const langs = [e.primaryLanguage.name]
+        // e.languages.nodes.forEach((i) => {
+        //   if (!langs.includes(i.name)) {
+        //     langs.push(i.name)
+        //   }
+        // })
+
+        langs.forEach((i) => {
+          if (langsToRepoMap.has(i)) {
+            langsToRepoMap.set(i, langsToRepoMap.get(i)! + 1)
+          } else {
+            langsToRepoMap.set(i, 1)
+          }
+        })
+      }
+    })
+    data.viewer.languagesPrivateRepos.nodes.forEach((e: Language) => {
+      if (e.primaryLanguage != null) {
+        const langs = [e.primaryLanguage.name]
+        // Commented to not consider the secondary languages.
+        // e.languages.nodes.forEach((i) => {
+        //   if (!langs.includes(i.name)) {
+        //     langs.push(i.name)
+        //   }
+        // })
+
+        langs.forEach((i) => {
+          if (langsToRepoMap.has(i)) {
+            langsToRepoMap.set(i, langsToRepoMap.get(i)! + 1)
+          } else {
+            langsToRepoMap.set(i, 1)
+          }
+        })
+      }
+    })
+
+
+    let reputationScore = 0
+    let totalBase = 0
+    const langs: Languages = JSON.parse(JSON.stringify(languages))
+
+    // Issue credentials for experience in different languages.
+    langsToRepoMap.forEach((count, lang) => {
+      if (Object.keys(langs).includes(lang.toLowerCase())) {
+        totalBase += (count)
+        reputationScore += (count * ((langs[lang.toLowerCase()].difficulty + langs[lang.toLowerCase()].importance) / 2))
+      }
+    })
+
+    // Change totalRepos to totalBase for considering secondary languages.
+    reputationScore = convertToReputationFloat(reputationScore / totalRepos)
+    
+    const creds: Credential[] = []
+    langsToRepoMap.forEach((v, k) => {
+      creds.push({
+        name: `${k} projects`,
+        description: `Number of projects that uses ${k} programmming language.`,
+        value: v
+      })
+    })
+    return {
+      reputation: reputationScore,
+      credentials: creds
+    }
+  }
+
+  const listOfMethods = [noOfReposScore(), yearsOfExperience(), computePortfolioScore()]
 
   const result: Source = { reputation: 0, credentials: [] }
 
@@ -58,3 +146,4 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
 
   return result
 }
+

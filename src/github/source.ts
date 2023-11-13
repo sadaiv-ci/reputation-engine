@@ -45,7 +45,6 @@ export const getUserDetails = async (scw: string) => {
     auth: await getToken(parseInt(installationId)) // personal access token of user.
   })
 
-  // console.log(await octokit.rest.users.getAuthenticated())
   const extracts = await extract(octokit)
 
   return extracts

@@ -1,0 +1,114 @@
+{
+  "javascript": {
+    "importance": 0.95,
+    "difficulty": 0.75
+  },
+  "python": {
+    "importance": 0.90,
+    "difficulty": 0.65
+  },
+  "java": {
+    "importance": 0.85,
+    "difficulty": 0.70
+  },
+  "c#": {
+    "importance": 0.80,
+    "difficulty": 0.75
+  },
+  "c++": {
+    "importance": 0.75,
+    "difficulty": 0.85
+  },
+  "go": {
+    "importance": 0.70,
+    "difficulty": 0.75
+  },
+  "rust": {
+    "importance": 0.65,
+    "difficulty": 0.80
+  },
+  "swift": {
+    "importance": 0.60,
+    "difficulty": 0.70
+  },
+  "kotlin": {
+    "importance": 0.55,
+    "difficulty": 0.65
+  },
+  "php": {
+    "importance": 0.50,
+    "difficulty": 0.60
+  },
+  "ruby": {
+    "importance": 0.45,
+    "difficulty": 0.70
+  },
+  "objective-c": {
+    "importance": 0.40,
+    "difficulty": 0.75
+  },
+  "typescript": {
+    "importance": 0.35,
+    "difficulty": 0.65
+  },
+  "lua": {
+    "importance": 0.30,
+    "difficulty": 0.60
+  },
+  "julia": {
+    "importance": 0.25,
+    "difficulty": 0.70
+  },
+  "elixir": {
+    "importance": 0.20,
+    "difficulty": 0.75
+  },
+  "clojure": {
+    "importance": 0.15,
+    "difficulty": 0.80
+  },
+  "css": {
+    "importance": 0.10,
+    "difficulty": 0.50
+  },
+  "html": {
+    "importance": 0.05,
+    "difficulty": 0.40
+  },
+  "scala": {
+    "importance": 0.50,
+    "difficulty": 0.70
+  },
+  "perl": {
+    "importance": 0.30,
+    "difficulty": 0.60
+  },
+  "r": {
+    "importance": 0.25,
+    "difficulty": 0.75
+  },
+  "shell": {
+    "importance": 0.20,
+    "difficulty": 0.55
+  },
+  "sql": {
+    "importance": 0.35,
+    "difficulty": 0.60
+  },
+  "dart": {
+    "importance": 0.45,
+    "difficulty": 0.65
+  },
+  "haskell": {
+    "importance": 0.40,
+    "difficulty": 0.75
+  },
+  "powershell": {
+    "importance": 0.30,
+    "difficulty": 0.65
+  },
+  "assembly": {
+    "importance": 0.25,
+    "difficulty": 0.80
+  }
+}

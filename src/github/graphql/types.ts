@@ -31,8 +31,26 @@ export type OwnerDetailsType = {
   }
 }
 
+export type Language = {
+  name: string,
+  primaryLanguage: {
+    name: string
+  }
+  languages: {
+    totalCount: number,
+    nodes: { name: string }[]
+  }
+}
+
+export type LanguagesRepo = {
+  totalCount: number,
+  nodes: Language[]
+}
+
 export type NoOfReposAndYearsOfExperienceResponseType = {
   viewer: {
+    languagesPrivateRepos: LanguagesRepo,
+    languagesPublicRepos: LanguagesRepo,
     publicFork: TotalCount,
     privateFork: TotalCount,
     publicRepos: TotalCount,
