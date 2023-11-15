@@ -18,18 +18,19 @@
 */
 
 import { Octokit } from "octokit";
-import { NoOfReposAndYearsOfExperience, OwnerDetails } from "./graphql/queries";
-import { NoOfReposAndYearsOfExperienceResponseType, OwnerDetailsType } from "./graphql/types";
+import { ConsistencyScoreQuery, NoOfReposAndYearsOfExperience, OwnerDetails } from "./graphql/queries";
+import { Consistency, NoOfReposAndYearsOfExperienceResponseType, OwnerDetailsType } from "./graphql/types";
 import { Source } from "../types";
 import { computeReposAndExp } from "./compute";
+import { getOneYearAgoTimestamp, getTodayTimestamp } from "../helper/maths";
 
 // Extract details for computation from different APIs.
 export const extract = async (oct: Octokit): Promise<Source> => {
 
-  const ownerId = await extractOwnerDetails(oct)
+  const { ownerId, login } = await extractOwnerDetails(oct)
 
   // Use promise to do all the query & send data to compute.
-  const promises = [extractReposAndExp(oct, ownerId)]
+  const promises = [extractReposAndExp(oct, ownerId, login)]
 
   const response = await Promise.all(promises)
 
@@ -43,20 +44,30 @@ export const extract = async (oct: Octokit): Promise<Source> => {
   return data;
 }
 
-const extractReposAndExp = async (oct: Octokit, ownerId: string): Promise<Source> => {
+const extractReposAndExp = async (oct: Octokit, ownerId: string, login: string): Promise<Source> => {
+  const oneYearAgo = (getOneYearAgoTimestamp())
+  const today = (getTodayTimestamp())
   const query = NoOfReposAndYearsOfExperience;
-  const response = await oct.graphql<NoOfReposAndYearsOfExperienceResponseType>({ query, ownerId })
 
-  // Compute reputation score & Collect credentials from source.
+  try {
+    const response = await oct.graphql<NoOfReposAndYearsOfExperienceResponseType>({ query, ownerId, oneYearAgo, today, login })
 
-  const data = await computeReposAndExp(response)
+    // Compute reputation score & Collect credentials from source. ̰
+    const data = await computeReposAndExp(response)
 
-  return data
+    return data
+  } catch (e) {
+    console.log('response', ((e as any).response))
+    return {
+      reputation: 0,
+      credentials: []
+    }
+  }
 }
 
 const extractOwnerDetails = async (oct: Octokit) => {
   const query = OwnerDetails;
   const response = await oct.graphql<OwnerDetailsType>(query)
-
-  return response.viewer.owner.nodes[0].owner.id
+  const owner = response.viewer.owner.nodes[0].owner
+  return { login: owner.login, ownerId: owner.id }
 }

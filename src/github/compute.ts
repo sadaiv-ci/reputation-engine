@@ -1,4 +1,4 @@
-import { convertToReputationFloat, getYearDifference } from "../helper/maths";
+import { calculateWeeksDifference, convertToReputationFloat, getYearDifference } from "../helper/maths";
 import { Credential, REPUTATION_DECIMAL_POINTS, Source } from "../types";
 import { Language, NoOfReposAndYearsOfExperienceResponseType } from "./graphql/types";
 
@@ -59,8 +59,6 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
       }]
     }
   }
-
-
 
   const computePortfolioScore = (): Source => {
 
@@ -123,7 +121,7 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
 
     // Change totalRepos to totalBase for considering secondary languages.
     reputationScore = convertToReputationFloat(reputationScore / totalRepos)
-    
+
     const creds: Credential[] = []
     langsToRepoMap.forEach((v, k) => {
       creds.push({
@@ -138,7 +136,34 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
     }
   }
 
-  const listOfMethods = [noOfReposScore(), yearsOfExperience(), computePortfolioScore()]
+  const computeConsistency = (): Source => {
+
+    const weeks = data.user.consistency.contributionCalendar.weeks
+
+    let totalNumerator = 0
+
+    weeks.forEach((i) => {
+      i.contributionDays.forEach((d) => {
+        const date = Date.parse(d.date)
+        const weekDifference = calculateWeeksDifference(Date.now() - date)
+
+        totalNumerator += (d.contributionCount * Math.exp(-1 * weekDifference))
+      })
+    })
+
+    const reputationScore = convertToReputationFloat(totalNumerator / weeks.length)
+
+    return {
+      reputation: reputationScore,
+      credentials: [{
+        name: "Consistency Score",
+        description: "Developer code activity score on GitHub.",
+        value: reputationScore
+      }]
+    }
+  }
+
+  const listOfMethods = [noOfReposScore(), yearsOfExperience(), computePortfolioScore(), computeConsistency()]
 
   const result: Source = { reputation: 0, credentials: [] }
 

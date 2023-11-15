@@ -24,7 +24,8 @@ export type OwnerDetailsType = {
     owner: {
       nodes: [{
         owner: {
-          id: string
+          id: string,
+          login: string
         }
       }]
     }
@@ -47,7 +48,26 @@ export type LanguagesRepo = {
   nodes: Language[]
 }
 
+export type Contribution = {
+  date: string,
+  contributionCount: number
+}
+
+export type ContributionDays = {
+  contributionDays: Contribution[]
+}
+
+export type Consistency = {
+  contributionCalendar: {
+    totalContributions: number,
+    weeks: ContributionDays[]
+  }
+}
+
 export type NoOfReposAndYearsOfExperienceResponseType = {
+  user: {
+    consistency: Consistency
+  },
   viewer: {
     languagesPrivateRepos: LanguagesRepo,
     languagesPublicRepos: LanguagesRepo,

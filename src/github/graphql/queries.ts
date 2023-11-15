@@ -7,10 +7,27 @@ export const OwnerDetails = `
         nodes {
           owner {
             id
+            login
           }
         }
       }
     }
+  }
+`
+
+export const ConsistencyScoreQuery = `
+  user (login: $login) {
+      consistency: contributionsCollection(from: $oneYearAgo, to: $today) {
+        contributionCalendar {
+          totalContributions
+          weeks {
+            contributionDays {
+              date
+              contributionCount
+            }
+          }
+        }
+      }
   }
 `
 
@@ -49,16 +66,9 @@ export const LanguagesExperience = `
 
 // Query required to calculate score for: Number of Repos & Calculate Years of Experience.
 export const NoOfReposAndYearsOfExperience = `
-  query ($ownerId: ID!) {
+  query ($ownerId: ID!, $oneYearAgo: DateTime!, $today: DateTime!, $login: String!) {
+    ${ConsistencyScoreQuery}
     viewer {
-      id
-      owner: repositories (first: 1){
-        nodes {
-          owner {
-            id
-          }
-        }
-      }
       ${LanguagesExperience}
       publicFork: repositories(privacy: PUBLIC, isFork: true) {
         totalCount
