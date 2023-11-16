@@ -1,5 +1,5 @@
-import { calculateWeeksDifference, convertToReputationFloat, getYearDifference } from "../helper/maths";
-import { Credential, REPUTATION_DECIMAL_POINTS, Source } from "../types";
+import { calculateWeeksDifference, convertToReputationFloat, denominateAndScale, getYearDifference } from "../helper/maths";
+import { Credential, Source } from "../types";
 import { Language, NoOfReposAndYearsOfExperienceResponseType } from "./graphql/types";
 
 import languages from './languages.json'
@@ -168,6 +168,8 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
   const result: Source = { reputation: 0, credentials: [] }
 
   listOfMethods.map((item) => { result.reputation += item.reputation, result.credentials = [...result.credentials, ...item.credentials] })
+
+  result.reputation = denominateAndScale(result.reputation, listOfMethods.length)
 
   return result
 }
