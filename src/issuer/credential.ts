@@ -1,7 +1,7 @@
 import { CredentialRequest, CredentialStatusType } from "@0xpolygonid/js-sdk";
 import { getExpirationTime } from "../helper/maths";
 import { Credential, REPUTATION_DECIMAL_POINTS } from "../types";
-import { RHS_URL } from "../env";
+import { BASE_URL, RHS_URL } from "../env";
 
 export const createCredentialRequest = (userDid: string, credential: Credential) => {
 
@@ -10,7 +10,7 @@ export const createCredentialRequest = (userDid: string, credential: Credential)
 
   const credentialRequest: CredentialRequest = {
     credentialSchema:
-      `http://localhost:4000/schemas/${credential.type}/cred.json`,
+      `${BASE_URL}/schemas/${credential.type}/cred.json`,
     type: `ProofOf${credential.type}`,
     credentialSubject: {
       id: userDid,

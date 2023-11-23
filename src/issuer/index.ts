@@ -1,8 +1,10 @@
-import { InMemoryPrivateKeyStore, BjjProvider, KmsKeyType, KMS, EthConnectionConfig, defaultEthConnectionConfig, CredentialStorage, InMemoryDataSource, W3CCredential, IdentityStorage, Identity, Profile, InMemoryMerkleTreeStorage, EthStateStorage, CredentialStatusResolverRegistry, CredentialStatusType, IssuerResolver, RHSResolver, OnChainResolver, AgentResolver, CredentialWallet, IdentityWallet, core } from "@0xpolygonid/js-sdk";
+import { InMemoryPrivateKeyStore, BjjProvider, KmsKeyType, KMS, EthConnectionConfig, defaultEthConnectionConfig, CredentialStorage, InMemoryDataSource, W3CCredential, IdentityStorage, Identity, Profile, InMemoryMerkleTreeStorage, EthStateStorage, CredentialStatusResolverRegistry, CredentialStatusType, IssuerResolver, RHSResolver, OnChainResolver, AgentResolver, CredentialWallet, IdentityWallet, core, IProofService, ProofService, IIdentityWallet, ICredentialWallet, IStateStorage, CircuitStorage, CircuitData, CircuitId, FSCircuitStorage } from "@0xpolygonid/js-sdk";
 import dotenv from 'dotenv'
 import { Credential, Source } from "../types";
 import { createCredentialRequest } from "./credential";
-import { POLYGON_ID_CONTRACT_ADDRESS, POLYGON_MUMBAI_RPC, RHS_URL, WALLET_PRIVATE_KEY } from "../env";
+import { CIRCUITS_FOLDER, POLYGON_ID_CONTRACT_ADDRESS, POLYGON_MUMBAI_RPC, RHS_URL, WALLET_PRIVATE_KEY } from "../env";
+import { ethers } from "ethers";
+import path from "path";
 
 dotenv.config();
 
@@ -18,11 +20,13 @@ if (privateKeyBuffer.length !== 32) {
 const encryptedSeed = new Uint8Array(privateKeyBuffer);
 
 let id: IdentityWallet
+let proofService: IProofService
 let credentialWallet: CredentialWallet
 let issuer: {
   did: core.DID;
   credential: W3CCredential;
 }
+let dataStorage: any
 
 export const setup = async () => {
   // KMS setup.
@@ -36,7 +40,7 @@ export const setup = async () => {
   conf.contractAddress = POLYGON_ID_CONTRACT_ADDRESS;
   conf.url = POLYGON_MUMBAI_RPC;
 
-  let dataStorage = {
+  dataStorage = {
     credential: new CredentialStorage(new InMemoryDataSource<W3CCredential>()),
     identity: new IdentityStorage(
       new InMemoryDataSource<Identity>(),
@@ -65,11 +69,24 @@ export const setup = async () => {
   // id object created.
   id = new IdentityWallet(kms, dataStorage, credentialWallet);
 
+  proofService = await initProofService(id, credentialWallet, dataStorage.states)
+
   await initIssuer()
 
   console.log("🆔 [id]: Identity setup successful.")
 
   return { identityWallet: id, credentialWallet }
+}
+
+export const initProofService = async (
+  identityWallet: IIdentityWallet,
+  credentialWallet: ICredentialWallet,
+  stateStorage: IStateStorage
+): Promise<ProofService> => {
+  const circuitStorage = new FSCircuitStorage({ dirname: path.join(__dirname, '/circuits') });
+
+  return new ProofService(identityWallet, credentialWallet, circuitStorage, stateStorage);
+
 }
 
 export const initIssuer = async () => {
@@ -100,6 +117,29 @@ export const issueCredentials = async (s: Source, did: string) => {
 
 
   const response = await Promise.all(issueCredsPromise)
+
+
+
+  // ================= generate Iden3SparseMerkleTreeProof =======================
+
+  const res = await id.addCredentialsToMerkleTree(response, issuer.did);
+
+  // ================= push states to rhs ===================
+
+  await id.publishStateToRHS(issuer.did, RHS_URL);
+
+  const provider = (dataStorage.states as EthStateStorage).provider as any as ethers.JsonRpcProvider
+  const ethSigner = new ethers.Wallet(WALLET_PRIVATE_KEY, provider);
+
+  const txId = await proofService.transitState(
+    issuer.did,
+    res.oldTreeState,
+    true,
+    dataStorage.states,
+    ethSigner as any
+  );
+
+  console.log('Transaction ID:', txId);
 
   return {
     creds: response

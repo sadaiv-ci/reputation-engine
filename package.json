@@ -19,10 +19,12 @@
     "@iden3/js-merkletree": "^1.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "ethers": "^6.8.1",
     "express": "^4.18.2",
     "firebase": "^10.5.2",
     "jsonwebtoken": "^9.0.2",
     "octokit": "^3.1.1",
+    "path": "^0.12.7",
     "rfc4648": "^1.5.3",
     "snarkjs": "^0.7.2"
   },

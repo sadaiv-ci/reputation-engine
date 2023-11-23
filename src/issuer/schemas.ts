@@ -1,3 +1,4 @@
+import { BASE_URL } from "../env"
 import { BaseSchemaType, CredentialType } from "../types"
 
 export const getSchemaFromCredentialType = (type: CredentialType, ld: boolean) => {
@@ -108,7 +109,7 @@ export const CREDENTIAL_SCHEMA_JSONLD = (cred: BaseSchemaType) => JSON.parse(`
                 "@context": {
                     "@propagate": true,
                     "@protected": true,
-                    "vocab": "http://localhost:4000/schemas/${cred.type}/cred#",
+                    "vocab": "${BASE_URL}/schemas/${cred.type}/cred#",
                     "xsd": "http://www.w3.org/2001/XMLSchema#",
                     "score": {
                         "@id": "vocab:score",
@@ -131,7 +132,7 @@ export const CREDENTIAL_SCHEMA_JSONLD = (cred: BaseSchemaType) => JSON.parse(`
                         "@type": "xsd:integer"
                     }
                 },
-                "@id": "http://localhost:4000/schemas/${cred.type}/cred.jsonld#ProofOf${cred.type}"
+                "@id": "${BASE_URL}/schemas/${cred.type}/cred.jsonld#ProofOf${cred.type}"
             }
         }
     ]
@@ -142,7 +143,7 @@ export const CREDENTIAL_SCHEMA_JSON = (cred: BaseSchemaType) => JSON.parse(`
   {
     "$metadata": {
         "uris": {
-            "jsonLdContext": "http://localhost:4000/schemas/${cred.type}/cred.jsonld"
+            "jsonLdContext": "${BASE_URL}/schemas/${cred.type}/cred.jsonld"
         },
         "version": "1.0",
         "type": "ProofOf${cred.type}"
