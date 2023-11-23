@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken'
 import { Octokit } from "octokit";
 import { getUserFromWallet } from '../helper/firebase';
 import { extract } from './extract';
+import { APP_ID, GITHUB_APP_PRIVATE_KEY } from '../env';
+import { Source } from '../types';
 
 const getToken = async (installationId: number) => {
-  const privateKey = process.env.GITHUB_APP_PRIVATE_KEY ?? ''
-  const appId = process.env.GITHUB_APP_ID ?? ''
 
   const generateJwtToken = () => {
     const currentTime = Math.floor(Date.now() / 1000);
@@ -14,10 +14,10 @@ const getToken = async (installationId: number) => {
     const payload = {
       iat: currentTime,
       exp: expirationTime,
-      iss: appId,
+      iss: APP_ID,
     };
 
-    const token = jwt.sign(payload, privateKey, {
+    const token = jwt.sign(payload, GITHUB_APP_PRIVATE_KEY, {
       algorithm: 'RS256'
     });
 
@@ -36,10 +36,10 @@ const getToken = async (installationId: number) => {
   return data.token;
 }
 
-export const getUserDetails = async (scw: string) => {
-  const installationId = await getUserFromWallet(scw)
+export const getUserDetails = async (scw: string): Promise<{ extracts: Source, did: string }> => {
+  const { installationId, did } = await getUserFromWallet(scw)
 
-  if(!installationId) return;
+  if (!installationId || !did) throw Error("Sadaiv CI is not installed by the user.");
 
   const octokit = new Octokit({
     auth: await getToken(parseInt(installationId)) // personal access token of user.
@@ -47,5 +47,5 @@ export const getUserDetails = async (scw: string) => {
 
   const extracts = await extract(octokit)
 
-  return extracts
+  return { extracts, did }
 }

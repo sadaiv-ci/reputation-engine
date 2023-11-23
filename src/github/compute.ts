@@ -31,11 +31,13 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
       credentials: [{
         name: "Number of Public Repositories",
         description: "Total number of public repositories owned by the developer",
-        value: data.viewer.publicRepos.totalCount
+        value: data.viewer.publicRepos.totalCount,
+        type: 'PublicRepository'
       }, {
         name: "Number of Valid Fork Repositories",
         description: "Total number of fork repositories with atleast one commit by developer",
-        value: validForks
+        value: validForks,
+        type: 'ValidForkRepository'
       }]
     }
   }
@@ -55,7 +57,8 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
       reputation: response, credentials: [{
         name: "Years of Experience",
         description: "Number of years of experience developer have been on GitHub.",
-        value: exp
+        value: exp,
+        type: "YearsOfExperience"
       }]
     }
   }
@@ -66,7 +69,6 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
 
     const totalRepos = data.viewer.languagesPublicRepos.totalCount + data.viewer.languagesPrivateRepos.totalCount
 
-    // console.log(data.viewer.languagesPublicRepos.nodes)
     // Compute Languages Score & Credentials list.
     data.viewer.languagesPublicRepos.nodes.forEach((e: Language) => {
       if (e.primaryLanguage != null) {
@@ -127,7 +129,11 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
       creds.push({
         name: `${k} projects`,
         description: `Number of projects that uses ${k} programmming language.`,
-        value: v
+        value: v,
+        type: 'LanguageProjects',
+        properties: {
+          language: k.toLowerCase()
+        }
       })
     })
     return {
@@ -158,7 +164,8 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
       credentials: [{
         name: "Consistency Score",
         description: "Developer code activity score on GitHub.",
-        value: reputationScore
+        value: reputationScore,
+        type: 'Consistency'
       }]
     }
   }

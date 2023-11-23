@@ -1,4 +1,4 @@
-import { REPUTATION_DECIMAL_POINTS } from "../types"
+import { REPUTATION_DECIMAL_POINTS, REPUTATION_EXPIRATION_TIME } from "../types"
 
 export const convertToReputationFloat = (r: number) => {
   return parseFloat(r.toFixed(REPUTATION_DECIMAL_POINTS))
@@ -43,13 +43,21 @@ export const getYearDifference = (timestamp1: string, timestamp2: string): numbe
 export const denominateAndScale = (originalReputation: number, totalReputationParameters: number): number => {
   const denominatedReputation = convertToReputationFloat(originalReputation / totalReputationParameters)
 
-  console.log(denominatedReputation)
-
   // Scaling the reputation value.
   const scalingFactor = 10
   const multiplier = 1000
 
   const r = multiplier * Math.pow(scalingFactor, denominatedReputation)
 
-  return r
+  return convertToReputationFloat(r)
 }
+
+export const getExpirationTime = (): Date => {
+  const currentDate = new Date();
+  const newDate = new Date(currentDate);
+
+  // Subtract 2 weeks (14 days) from the current date
+  newDate.setDate(currentDate.getDate() + REPUTATION_EXPIRATION_TIME);
+
+  return newDate;
+};
