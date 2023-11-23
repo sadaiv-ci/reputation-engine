@@ -83,7 +83,7 @@ export const initProofService = async (
   credentialWallet: ICredentialWallet,
   stateStorage: IStateStorage
 ): Promise<ProofService> => {
-  const circuitStorage = new FSCircuitStorage({ dirname: path.join(__dirname, '/circuits') });
+  const circuitStorage = new FSCircuitStorage({ dirname: path.join(__dirname, '../circuits') });
 
   return new ProofService(identityWallet, credentialWallet, circuitStorage, stateStorage);
 
