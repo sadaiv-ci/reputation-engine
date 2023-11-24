@@ -18,7 +18,7 @@ const start = () => {
   })
 
   const corsOptions = {
-    origin: [`http://localhost:${PORT}`, 'http://explorer.sadaiv.io'],
+    origin: [`http://localhost:3000`, `http://localhost:${PORT}`, 'http://explorer.sadaiv.io'],
     methods: 'GET',
     optionsSuccessStatus: 204,
   };
@@ -82,6 +82,7 @@ const start = () => {
         return;
       }
     } catch (e: any) {
+      console.log(e)
       res.status(500).send({
         message: e?.message ?? 'Something went wrong.'
       })

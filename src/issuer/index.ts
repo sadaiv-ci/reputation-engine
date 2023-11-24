@@ -128,21 +128,22 @@ export const issueCredentials = async (s: Source, did: string) => {
 
   await id.publishStateToRHS(issuer.did, RHS_URL);
 
-  const provider = (dataStorage.states as EthStateStorage).provider as any as ethers.JsonRpcProvider
-  const ethSigner = new ethers.Wallet(WALLET_PRIVATE_KEY, provider);
+  // const provider = (dataStorage.states as EthStateStorage).provider as any as ethers.JsonRpcProvider
+  // const ethSigner = new ethers.Wallet(WALLET_PRIVATE_KEY, provider);
 
-  const txId = await proofService.transitState(
-    issuer.did,
-    res.oldTreeState,
-    true,
-    dataStorage.states,
-    ethSigner as any
-  );
+  // const txId = await proofService.transitState(
+  //   issuer.did,
+  //   res.oldTreeState,
+  //   true,
+  //   dataStorage.states,
+  //   ethSigner as any
+  // );
 
-  console.log('Transaction ID:', txId);
+  // console.log('Transaction ID:', txId);
 
   return {
-    creds: response
+    creds: response,
+    // txId
   }
 }
 
