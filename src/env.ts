@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const PORT = process.env.PORT || 4000;
-export const BASE_URL = process.env.PORT ? process.env.BASE_URL ?? '' : `http://localhost:${PORT}`
+export const BASE_URL = process.env.BASE_URL ?? ''
 
 export const GITHUB_APP_PRIVATE_KEY = process.env.GITHUB_APP_PRIVATE_KEY ?? ''
 export const APP_ID = process.env.GITHUB_APP_ID ?? ''

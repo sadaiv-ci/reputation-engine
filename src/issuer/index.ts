@@ -119,7 +119,6 @@ export const issueCredentials = async (s: Source, did: string) => {
   const response = await Promise.all(issueCredsPromise)
 
 
-
   // ================= generate Iden3SparseMerkleTreeProof =======================
 
   const res = await id.addCredentialsToMerkleTree(response, issuer.did);
