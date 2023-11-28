@@ -68,6 +68,11 @@ const extractReposAndExp = async (oct: Octokit, ownerId: string, login: string):
 const extractOwnerDetails = async (oct: Octokit) => {
   const query = OwnerDetails;
   const response = await oct.graphql<OwnerDetailsType>(query)
+  if (!response.viewer) {
+    // TODO: Reputation is Zero. Users account is freshly created.
+    // Maybe we can set limit or time for account to be established.
+    throw Error("User don't have a legit GitHub profile")
+  }
   const owner = response.viewer.owner.nodes[0].owner
   return { login: owner.login, ownerId: owner.id }
 }

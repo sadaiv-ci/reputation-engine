@@ -12,6 +12,8 @@ const app: Express = express();
 
 const start = () => {
 
+  app.use(cors())
+
   app.use((req, _, next) => {
     console.log(`⚡️ [server]: ${req.method} query on ${req.path}`)
     next()
