@@ -4,6 +4,7 @@ import { getUserFromWallet } from '../helper/firebase';
 import { extract } from './extract';
 import { APP_ID, GITHUB_APP_PRIVATE_KEY } from '../env';
 import { Source } from '../types';
+import { getExpirationTime } from '../helper/maths';
 
 const getToken = async (installationId: number) => {
 
@@ -37,9 +38,12 @@ const getToken = async (installationId: number) => {
 }
 
 export const getUserDetails = async (scw: string): Promise<{ extracts: Source, did: string }> => {
-  const { installationId, did } = await getUserFromWallet(scw)
+  const { installationId, did, reputation, reputationCalculatedOn } = await getUserFromWallet(scw)
 
   if (!installationId || !did) throw Error("Sadaiv CI is not installed by the user.");
+
+  // Adding check to avoid calculating reputation of same person before the expiration period.
+  if (reputation && reputationCalculatedOn && ((new Date(parseInt(reputationCalculatedOn))) > getExpirationTime(true))) throw Error("Reputation is already calculated before the expiration time.");
 
   const octokit = new Octokit({
     auth: await getToken(parseInt(installationId)) // personal access token of user.

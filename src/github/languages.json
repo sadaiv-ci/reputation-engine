@@ -1,4 +1,8 @@
 {
+  "solidity": {
+    "importance": 0.85,
+    "difficulty": 0.60
+  },
   "javascript": {
     "importance": 0.95,
     "difficulty": 0.75

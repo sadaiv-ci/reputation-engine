@@ -52,12 +52,16 @@ export const denominateAndScale = (originalReputation: number, totalReputationPa
   return convertToReputationFloat(r)
 }
 
-export const getExpirationTime = (): Date => {
+export const getExpirationTime = (inPast?: boolean): Date => {
   const currentDate = new Date();
   const newDate = new Date(currentDate);
 
-  // Subtract 2 weeks (14 days) from the current date
-  newDate.setDate(currentDate.getDate() + REPUTATION_EXPIRATION_TIME);
+  // 2 weeks (14 days) from the current date
+  if (inPast) {
+    newDate.setDate(currentDate.getDate() - REPUTATION_EXPIRATION_TIME);
+  } else {
+    newDate.setDate(currentDate.getDate() + REPUTATION_EXPIRATION_TIME);
+  }
 
   return newDate;
 };

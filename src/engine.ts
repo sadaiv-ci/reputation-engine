@@ -20,7 +20,7 @@ const start = () => {
   })
 
   const corsOptions = {
-    origin: [`http://localhost:3000`, `http://localhost:${PORT}`, 'http://explorer.sadaiv.io'],
+    origin: ['https://explorer.sadaiv.io'],
     methods: 'GET',
     optionsSuccessStatus: 204,
   };

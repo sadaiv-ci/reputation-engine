@@ -34,7 +34,10 @@ export const getUserFromWallet = async (scw: string): Promise<any> => {
   const installationId = doc.data()['installation_id']
   const did = doc.data()['did']
 
-  return { installationId, did }
+  const reputation = doc.data()['reputation']
+  const reputationCalculatedOn = doc.data()['reputationCalculatedOn']
+
+  return { installationId, did, reputation, reputationCalculatedOn }
 }
 
 export const getUserDocRef = async (scw: string) => {
