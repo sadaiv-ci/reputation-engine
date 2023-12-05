@@ -12,6 +12,8 @@ interface Languages {
   [key: string]: LanguageData;
 }
 
+// 0 to 10 scale.
+const weights = [5, 3, 6, 8]
 
 export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResponseType): Promise<Source> => {
   // Calculating Reputation.
@@ -174,7 +176,7 @@ export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResp
 
   const result: Source = { reputation: 0, credentials: [] }
 
-  listOfMethods.map((item) => { result.reputation += item.reputation, result.credentials = [...result.credentials, ...item.credentials] })
+  listOfMethods.map((item, index) => { result.reputation += (item.reputation * weights[index]), result.credentials = [...result.credentials, ...item.credentials] })
 
   result.reputation = denominateAndScale(result.reputation, listOfMethods.length)
 
