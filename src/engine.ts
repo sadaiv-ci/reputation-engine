@@ -49,7 +49,7 @@ const start = () => {
       return;
     }
     try {
-      const { extracts: creds, did } = await getUserDetails(scw.toString())
+      const { extracts: creds, did } = await getUserDetails(scw.toString().toLowerCase())
 
       if (!creds || creds.credentials.length < 3) {
         res.status(400).send({ message: "Unable to issue credentials to the developer" })
@@ -59,7 +59,7 @@ const start = () => {
       const response = await issueCredentials(creds, did)
 
       // Store credentails on users' firebase.
-      const userRef = await getUserDocRef(scw.toString())
+      const userRef = await getUserDocRef(scw.toString().toLowerCase())
 
       if (userRef) {
         const isStored = await updateReputationAndCredentials(userRef, creds.reputation, Date.now(), response.creds)

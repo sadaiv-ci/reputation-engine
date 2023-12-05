@@ -45,7 +45,7 @@ export const getUserDocRef = async (scw: string) => {
 
   const db = getFirestore(app)
 
-  const q = query(collection(db, DEVELOPERS_COLLECTION_NAME), where('scwAddress', "==", scw))
+  const q = query(collection(db, DEVELOPERS_COLLECTION_NAME), where('scwAddress', "==", scw.toLowerCase()))
   const snapshot = await getDocs(q)
 
   const docs = snapshot.docs
