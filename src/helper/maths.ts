@@ -45,7 +45,7 @@ export const denominateAndScale = (originalReputation: number, totalReputationPa
 
   // Scaling the reputation value.
   const scalingFactor = 5
-  const multiplier = 1000
+  const multiplier = 100
 
   const r = multiplier * Math.pow(scalingFactor, denominatedReputation)
 
