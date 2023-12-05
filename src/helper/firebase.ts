@@ -26,6 +26,7 @@ export const getUserFromWallet = async (scw: string): Promise<any> => {
   const snapshot = await getDocs(q)
 
   const docs = snapshot.docs
+  console.log('⚡️ [server]: Fetching user: ', scw, docs.length)
 
   if (docs.length == 0) return null;
 
