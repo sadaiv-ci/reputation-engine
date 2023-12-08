@@ -13,7 +13,7 @@ interface Languages {
 }
 
 // 0 to 10 scale.
-const weights = [5, 3, 6, 8]
+const weights = [5, 5, 6, 7]
 
 export const computeReposAndExp = async (data: NoOfReposAndYearsOfExperienceResponseType): Promise<Source> => {
   // Calculating Reputation.
